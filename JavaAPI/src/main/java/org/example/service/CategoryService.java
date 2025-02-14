@@ -19,6 +19,10 @@ public class CategoryService {
         return repository.findAll();
     }
 
+    public CategoryEntity getOne(int id) {
+        return repository.findById(id).get();
+    }
+
     public CategoryEntity create(CategoryCreateDTO dto) {
         CategoryEntity entity = new CategoryEntity();
         entity.setName(dto.getName());

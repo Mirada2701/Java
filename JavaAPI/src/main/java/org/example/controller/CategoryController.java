@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@CrossOrigin(origins = "http://localhost:5173")
 public class CategoryController {
 
     @Autowired
@@ -21,9 +22,13 @@ public class CategoryController {
     public List<CategoryEntity> getAllCategories() {
         return categoryService.getList();
     }
+//    @GetMapping("/{id}")
+//    public CategoryEntity getOneCategory(int id) {
+//        return categoryService.getOne(id);
+//    }
 
     @PostMapping
-    public CategoryEntity createCategory(CategoryCreateDTO dto) {
+    public CategoryEntity createCategory(@RequestBody CategoryCreateDTO dto) {
         return categoryService.create(dto);
     }
 
