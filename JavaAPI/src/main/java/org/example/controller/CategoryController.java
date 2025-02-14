@@ -6,9 +6,11 @@ import org.example.entities.CategoryEntity;
 import org.example.repository.ICategoryRepository;
 import org.example.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -22,10 +24,12 @@ public class CategoryController {
     public List<CategoryEntity> getAllCategories() {
         return categoryService.getList();
     }
-//    @GetMapping("/{id}")
-//    public CategoryEntity getOneCategory(int id) {
-//        return categoryService.getOne(id);
-//    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryEntity> getCategoryById(@PathVariable Integer id) {
+        Optional<CategoryEntity> category = categoryService.getById(id);
+        return category.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
     @PostMapping
     public CategoryEntity createCategory(@RequestBody CategoryCreateDTO dto) {
@@ -33,7 +37,7 @@ public class CategoryController {
     }
 
     @PutMapping
-    public CategoryEntity editCategory(CategoryEditDTO dto) {
+    public CategoryEntity editCategory(@RequestBody CategoryEditDTO dto) {
         return categoryService.edit(dto);
     }
 

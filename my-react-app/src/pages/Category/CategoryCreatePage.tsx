@@ -49,14 +49,7 @@ const CategoryCreatePage : React.FC = () => {
                         ]}>
                         <Input placeholder={"Image"}/>
                     </Item>
-                    <Item
-                        name="creationTime"
-                        label={"Creation Time"}
-                        rules={[
-                            {required:true, message:"Вкажіть image"}
-                        ]}>
-                        <Input placeholder={"creationTime"}/>
-                    </Item>
+
 
                     <Item
                         name="description"

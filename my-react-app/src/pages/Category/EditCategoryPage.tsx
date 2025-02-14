@@ -38,7 +38,6 @@ const EditCategoryPage = () => {
                 initialValues={{
                     name: category?.name,
                     image: category?.image,
-                    creationTime: category?.creationTime,
                     description: category?.description || '',
                 }}
             >
@@ -55,12 +54,7 @@ const EditCategoryPage = () => {
                     >
                     <Input placeholder={"Image"}/>
                 </Item>
-                <Item
-                    name="creationTime"
-                    label={"Creation Time"}
-                   >
-                    <Input placeholder={"creationTime"}/>
-                </Item>
+
 
                 <Item
                     name="description"

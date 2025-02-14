@@ -39,9 +39,6 @@ const CategoryListPage = () => {
                 {category.name}
             </th>
             <td className="px-6 py-4">
-                {category.creationTime}
-            </td>
-            <td className="px-6 py-4">
                 {category.description}
             </td>
             <td className="px-6 py-4">

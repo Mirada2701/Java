@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -19,8 +20,8 @@ public class CategoryService {
         return repository.findAll();
     }
 
-    public CategoryEntity getOne(int id) {
-        return repository.findById(id).get();
+    public Optional<CategoryEntity> getById(Integer id) {
+        return repository.findById(id);
     }
 
     public CategoryEntity create(CategoryCreateDTO dto) {
