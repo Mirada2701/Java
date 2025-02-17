@@ -1,48 +1,33 @@
 # React + TypeScript + Vite
 
-npm i
+docker build -t npd211-react .
 
-npm run dev
+docker images --all
 
-npm i react-router-dom
+docker run -it --rm -p 5072:80 --name npd211_container_react npd211-react
 
-npm i antd
+docker run -d --restart=always --name npd211_container_react -p 5072:80 npd211-react
 
-# Add Tailwindcss
+docker ps -a
 
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
+docker stop npd211_container_react
 
-"./index.html",
-"./src/**/*.{js,ts,jsx,tsx}",
+docker rm npd211_container_react
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+docker images --all
+docker rmi npd211-react
 
-# Axios
+docker login
 
-npm i axios
+docker tag npd211-react:latest novakvova/npd211-react:latest
 
-# Flowbite
-npm install flowbite-react
+docker push novakvova/npd211-react:latest
 
-const flowbite = require("flowbite-react/tailwind");
+docker pull novakvova/npd211-react:latest
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-content: [
-// ...
-flowbite.content(),
-],
-plugins: [
-// ...
-flowbite.plugin(),
-],
-};
+docker ps -a
 
-# Query RTK
-npm install @reduxjs/toolkit react-redux @types/react-redux
+docker run -d --restart=always --name npd211_container_react -p 5072:80 novakvova/npd211-react
 
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
