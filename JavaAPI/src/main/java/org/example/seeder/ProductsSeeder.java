@@ -9,8 +9,6 @@ import org.example.repository.IProductRepository;
 import org.example.service.FileService;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 @Component
@@ -66,7 +64,6 @@ public class ProductsSeeder {
 
         imageName = fileService
                 .load("https://parkas.com.ua/wa-data/public/shop/products/34/01/134/images/377/377.970.jpg");
-        //product2.setImage(imageName);
         var img2 = new ProductImageEntity();
         img2.setPriority(1);
         img2.setImageUrl(imageName);

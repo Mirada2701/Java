@@ -1,0 +1,49 @@
+package org.example.controller;
+
+import org.example.dto.product.ProductItemDTO;
+import org.example.dto.product.ProductPostDTO;
+import org.example.entities.ProductEntity;
+import org.example.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/products")
+public class ProductController {
+
+    @Autowired
+    private ProductService productService;
+
+    @GetMapping
+    public List<ProductItemDTO> getAllProducts() {
+        return productService.getAllProducts();
+    }
+
+    @GetMapping("/{id}")
+    public ProductItemDTO getProductById(@PathVariable Integer id) {
+        return productService.getProductById(id);
+    }
+
+    @PostMapping
+    public ResponseEntity<ProductEntity> createProduct(@RequestBody ProductPostDTO product) {
+        ProductEntity createdProduct = productService.createProduct(product);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateProduct(@PathVariable Integer id, @RequestBody ProductPostDTO product) {
+        return productService.updateProduct(id, product)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
+        return productService.deleteProduct(id)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.notFound().build();
+    }
+}
