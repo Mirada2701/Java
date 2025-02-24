@@ -26,7 +26,6 @@ public class CategoryEntity {
     @Column(length = 40000)
     private String description;
 
-    //@JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductEntity> products;
 }

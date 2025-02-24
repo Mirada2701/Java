@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -23,18 +25,19 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductItemDTO getProductById(@PathVariable Integer id) {
-        return productService.getProductById(id);
+    public ResponseEntity<ProductItemDTO> getProductById(@PathVariable Integer id) {
+        ProductItemDTO item = productService.getProductById(id);
+        return new ResponseEntity<>(item, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ProductEntity> createProduct(@RequestBody ProductPostDTO product) {
+    @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductEntity> createProduct(@ModelAttribute ProductPostDTO product) {
         ProductEntity createdProduct = productService.createProduct(product);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateProduct(@PathVariable Integer id, @RequestBody ProductPostDTO product) {
+    @PutMapping(value = "/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateProduct(@PathVariable Integer id, @ModelAttribute ProductPostDTO product) {
         return productService.updateProduct(id, product)
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.notFound().build();

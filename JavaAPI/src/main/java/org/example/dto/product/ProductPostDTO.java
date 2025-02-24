@@ -1,13 +1,15 @@
 package org.example.dto.product;
 
 import lombok.Data;
-import org.example.entities.CategoryEntity;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Data
 public class ProductPostDTO {
     private String name;
     private String description;
-    private float price;
-    private Integer amount;
-    private CategoryEntity category;
+    private double price;
+    private int categoryId;
+    private List<MultipartFile> images;
 }

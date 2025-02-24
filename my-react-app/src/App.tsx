@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
-import CategoriesPage from './pages/CategoriesPage';
-import CreateCategoryPage from "./pages/CreateCategoryPage.tsx";
-import EditCategoryPage from "./pages/EditCategoryPage.tsx";
+import CategoriesPage from './pages/category/CategoriesPage.tsx';
+import CreateCategoryPage from "./pages/category/CreateCategoryPage.tsx";
+import EditCategoryPage from "./pages/category/EditCategoryPage.tsx";
+import ProductsPage from "./pages/product/ProductPage.tsx";
+import CreateProductPage from "./pages/product/CreateProductPage.tsx";
 
 const App: React.FC = () => (
     <Router>
@@ -16,7 +18,10 @@ const App: React.FC = () => (
                     <Route path="create" element={<CreateCategoryPage />} />
                     <Route path="edit/:id" element={<EditCategoryPage />} />
                 </Route>
-
+                <Route path="products" >
+                    <Route index element={<ProductsPage />} />
+                    <Route path="create" element={<CreateProductPage />} />
+                </Route>
             </Route>
         </Routes>
     </Router>

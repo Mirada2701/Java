@@ -4,8 +4,8 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class CategoryPostDTO {
+public class CategoryCreateDTO {
     private String name;
-    private String description;
     private MultipartFile imageFile;
+    private String description;
 }

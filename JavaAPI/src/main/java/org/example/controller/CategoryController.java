@@ -1,14 +1,18 @@
 package org.example.controller;
 
+import org.example.dto.category.CategoryCreateDTO;
+import org.example.dto.category.CategoryEditDTO;
 import org.example.dto.category.CategoryItemDTO;
-import org.example.dto.category.CategoryPostDTO;
 import org.example.entities.CategoryEntity;
 import org.example.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
+
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
@@ -29,22 +33,18 @@ public class CategoryController {
     }
 
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CategoryEntity> createCategory(@ModelAttribute CategoryPostDTO category) {
+    public ResponseEntity<CategoryEntity> createCategory(@ModelAttribute CategoryCreateDTO category) {
         CategoryEntity createdCategory = categoryService.createCategory(category);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateCategory(@PathVariable Integer id, @ModelAttribute CategoryPostDTO category) {
-        return categoryService.updateCategory(id, category)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> updateCategory(@PathVariable Integer id, @ModelAttribute CategoryCreateDTO category) {
+        return categoryService.updateCategory(id, category) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        return categoryService.deleteCategory(id)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.notFound().build();
+        return categoryService.deleteCategory(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }

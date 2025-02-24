@@ -1,15 +1,14 @@
 package org.example.service;
 
 import lombok.AllArgsConstructor;
+import org.example.dto.category.CategoryCreateDTO;
 import org.example.dto.category.CategoryItemDTO;
-import org.example.dto.category.CategoryPostDTO;
 import org.example.entities.CategoryEntity;
 import org.example.mapper.CategoryMapper;
 import org.example.repository.ICategoryRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
-
 
 @Service
 @AllArgsConstructor
@@ -28,7 +27,7 @@ public class CategoryService {
         return categoryMapper.toDto(categoryRepository.findById(id).get());
     }
 
-    public CategoryEntity createCategory(CategoryPostDTO category) {
+    public CategoryEntity createCategory(CategoryCreateDTO category) {
         var entity = new CategoryEntity();
         entity.setName(category.getName());
         entity.setDescription(category.getDescription());
@@ -42,7 +41,7 @@ public class CategoryService {
         return categoryRepository.save(entity);
     }
 
-    public boolean updateCategory(Integer id, CategoryPostDTO category) {
+    public boolean updateCategory(Integer id, CategoryCreateDTO category) {
         var res = categoryRepository.findById(id);
         if (res.isEmpty()){
             return false;
