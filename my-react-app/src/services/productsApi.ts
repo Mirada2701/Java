@@ -1,11 +1,11 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {APP_ENV} from "../env";
-import {IProduct, IProductCreate, IProductEdit} from "../types/Product.ts";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {IProduct, IProductCreate} from "../pages/Product/types";
+import { APP_ENV } from "../env";
 import {serialize} from "object-to-formdata";
 
 export const productsApi = createApi({
     reducerPath: 'productsApi',
-    baseQuery: fetchBaseQuery({ baseUrl: APP_ENV.REMOTE_BASE_API }),
+    baseQuery: fetchBaseQuery({ baseUrl: `${APP_ENV.REMOTE_BASE_API}` }),
     tagTypes: ["Product"], // Додаємо tag для категорій
     endpoints: (builder) => ({
 
@@ -18,7 +18,6 @@ export const productsApi = createApi({
             query: (id) => `products/${id}`,
             providesTags: ["Product"]
         }),
-
         createProduct: builder.mutation<IProduct, IProductCreate>({
             query: (model) => {
                 try {
@@ -35,21 +34,21 @@ export const productsApi = createApi({
             invalidatesTags: ["Product"]   // Інвалідовуємо "Product" після створення
         }),
 
-        updateProduct: builder.mutation<void, IProductEdit>({
-            query: ({ id, ...model }) => {
-                try {
-                    const formData = serialize(model);
-                    return {
-                        url: `products/${id}`,
-                        method: 'PUT',
-                        body: formData
-                    };
-                } catch {
-                    throw new Error("Error serializing the form data.");
-                }
-            },
-            invalidatesTags: ["Product"]
-        }),
+        // updateProduct: builder.mutation<void, IProductEdit>({
+        //     query: ({ id, ...model }) => {
+        //         try {
+        //             const formData = serialize(model);
+        //             return {
+        //                 url: `products/${id}`,
+        //                 method: 'PUT',
+        //                 body: formData
+        //             };
+        //         } catch {
+        //             throw new Error("Error serializing the form data.");
+        //         }
+        //     },
+        //     invalidatesTags: ["Product"]
+        // }),
 
         deleteProduct: builder.mutation<void, number>({
             query: (id) => ({
@@ -65,6 +64,6 @@ export const {
     useGetAllProductsQuery,
     useGetProductByIdQuery,
     useCreateProductMutation,
-    useUpdateProductMutation,
+    // useUpdateProductMutation,
     useDeleteProductMutation
 } = productsApi;

@@ -1,136 +1,72 @@
-import React, { useEffect, useState } from 'react';
-import { useGetCategoryByIdQuery, useUpdateCategoryMutation } from '../../services/categoriesApi.ts';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ICategoryEdit } from "../../types/Category.ts";
+import { Form, Input, Button, notification } from 'antd';
+import TextArea from "antd/es/input/TextArea";
+import {useNavigate, useParams} from "react-router-dom";
+import {useGetCategoryQuery, useUpdateCategoryMutation} from "../../services/apiCategory.ts";
+import {ICategoryPutRequest} from "./types.ts";
+const { Item } = Form;
 
-const EditCategoryPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // Отримуємо ID категорії з URL
-
-    const [categoryUpdated, setCategoryUpdated] = useState<ICategoryEdit>({
-        id: 0,
-        name: '',
-        description: '',
-        imageFile: null
-    });
-    const { data: categoryData, isLoading: isLoadingCategory, error: getCategoryError } = useGetCategoryByIdQuery(id!); // Отримуємо категорію
-    const [updateCategory, { isLoading, error }] = useUpdateCategoryMutation();
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (categoryData) { // Коли категорія завантажена, оновлюємо стейт
-            setCategoryUpdated({
-                id: categoryData.id,
-                name: categoryData.name,
-                description: categoryData.description ?? '',
-                imageFile: null
+const EditCategoryPage = () => {
+    const { id } = useParams<{ id: string }>();
+    const { data: category, isError, isLoading } = useGetCategoryQuery(Number(id));
+    const [updateCategory] = useUpdateCategoryMutation();
+    const [form] = Form.useForm<ICategoryPutRequest>();
+    const navigation = useNavigate();
+    const onFinish = async (values: ICategoryPutRequest) => {
+        try {
+            const category = await updateCategory({...values, id: Number(id)}).unwrap();
+            console.log("Update category", category);
+            navigation("/categories");
+        } catch (err) {
+            console.error("Помилка редагування категорії:", err);
+            notification.error({
+                message: 'Помилка редагування категорії',
+                description: 'Щось пішло не так, спробуйте ще раз.',
             });
         }
-    }, [categoryData]);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            if (!categoryUpdated.imageFile) {
-                // @ts-ignore
-                delete categoryUpdated.imageFile;
-            }
-            // console.log("model", categoryUpdated);
-            // Викликаємо мутацію для редагування категорії
-            await updateCategory(categoryUpdated).unwrap();
-            navigate('..'); // Перехід до списку категорій
-        } catch (err) {
-            console.error('Error updating category:', err);
-        }
     };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setCategoryUpdated((prevCategory) => ({
-            ...prevCategory,
-            [name]: value,
-        }));
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const file = e.target.files[0];
-            setCategoryUpdated((prevCategory) => ({
-                ...prevCategory,
-                imageFile: file,
-            }));
-        }
-    };
-
-    if (isLoadingCategory) return <p>Loading...</p>;
-    if (getCategoryError) return <p>Error loading category data.</p>;
-
+    if (isLoading) return <div>Loading category...</div>;
+    if (isError) return <div>Error loading category.</div>;
     return (
-        <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg">
-            <h1 className="text-2xl font-bold text-center mb-6">Edit Category</h1>
-            <button onClick={() => navigate(-1)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-700 mb-4"
+        <div style={{maxWidth: '400px', margin: '0 auto'}}>
+            <h1 className="text-center text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500 my-6">
+                Зміна категорії
+            </h1>
+            <Form
+                form={form}
+                onFinish={onFinish}
+                layout="vertical"
+                initialValues={{
+                    name: category?.name,
+                    image: category?.image,
+                    description: category?.description || '',
+                }}
             >
-                Go Back
-            </button>
-
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label className="block text-gray-700" htmlFor="name">
-                        Category Name
-                    </label>
-                    <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value={categoryUpdated.name}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded mt-2"
-                        required
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block text-gray-700" htmlFor="description">
-                        Description
-                    </label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        value={categoryUpdated.description}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded mt-2"
-                        rows={4}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label className="block text-gray-700" htmlFor="imageFile">
-                        Category Image
-                    </label>
-                    <input
-                        id="imageFile"
-                        name="imageFile"
-                        type="file"
-                        onChange={handleFileChange}
-                        className="w-full p-2 border border-gray-300 rounded mt-2"
-                    />
-                </div>
-
-                <div className="flex justify-center">
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-blue-500 text-white p-2 rounded w-full md:w-1/2 mt-4"
+                <Item
+                    name="name"
+                    label={"Назва категорії"}
                     >
-                        {isLoading ? 'Updating...' : 'Update Category'}
-                    </button>
-                </div>
+                    <Input placeholder={"Назва"}/>
+                </Item>
 
-                {error && <p className="text-red-500 mt-2">Error updating category!</p>}
-            </form>
+                <Item
+                    name="image"
+                    label={"Image"}
+                    >
+                    <Input placeholder={"Image"}/>
+                </Item>
+
+                <Item
+                    name="description"
+                    label={"Опис"}>
+                    <TextArea placeholder={"Опис..."} rows={4}/>
+                </Item>
+                <Item>
+                    <Button type="primary" htmlType="submit" block>
+                        Оновити категорію
+                    </Button>
+                </Item>
+            </Form>
         </div>
     );
 };
-
 export default EditCategoryPage;

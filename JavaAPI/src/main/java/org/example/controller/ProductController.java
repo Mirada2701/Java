@@ -25,9 +25,8 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductItemDTO> getProductById(@PathVariable Integer id) {
-        ProductItemDTO item = productService.getProductById(id);
-        return new ResponseEntity<>(item, HttpStatus.OK);
+    public ProductItemDTO getProductById(@PathVariable Integer id) {
+        return productService.getProductById(id);
     }
 
     @PostMapping(consumes = MULTIPART_FORM_DATA_VALUE)
@@ -36,7 +35,7 @@ public class ProductController {
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/{id}", consumes = MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateProduct(@PathVariable Integer id, @ModelAttribute ProductPostDTO product) {
         return productService.updateProduct(id, product)
                 ? ResponseEntity.ok().build()

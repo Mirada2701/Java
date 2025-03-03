@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class                    ProductService {
+public class ProductService {
 
     private IProductRepository productRepository;
     private FileService fileService;
@@ -101,14 +101,6 @@ public class                    ProductService {
         if (res.isEmpty()) {
             return false;
         }
-        var entity = res.get();
-
-        //delete images
-        var productImageEntities = entity.getImages();
-        for (var productImage : productImageEntities) {
-            fileService.remove(productImage.getName());
-        }
-
         productRepository.deleteById(id);
         return true;
     }

@@ -1,22 +1,25 @@
-import React from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Header from "./Header";
+import Sidebar from "./Sidebar";
 
-const Layout: React.FC = () => (
-    <div className="min-h-screen flex flex-col">
-        <nav className="bg-blue-600 text-white p-4">
-            <ul className="flex space-x-4">
-                <li><Link to="/" className="hover:underline">Home</Link></li>
-                <li><Link to="/categories" className="hover:underline">Categories</Link></li>
-                <li><Link to="/products" className="hover:underline">Products</Link></li>
-            </ul>
-        </nav>
-        <main className="flex-1 p-4">
-            <Outlet />
-        </main>
-        <footer className="bg-gray-800 text-white text-center p-4">
-            &copy; 2025
-        </footer>
-    </div>
-);
+const Layout: React.FC = () => {
+    return (
+        <div className="flex h-screen bg-gray-100">
+            {/* Sidebar */}
+            <Sidebar />
+
+            <div className="flex flex-col flex-1">
+                {/* Header */}
+                <Header />
+
+                {/* Main Content */}
+                <main className="flex-1 p-4">
+                    <Outlet />
+                </main>
+            </div>
+        </div>
+    );
+};
 
 export default Layout;
