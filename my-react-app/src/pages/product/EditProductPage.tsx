@@ -1,28 +1,48 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Form, Input, Select, Upload, UploadFile} from "antd";
-import {IProductCreate} from "./types.ts";
+import {IProductCreate, IProductEdit} from "./types.ts";
 import TextArea from "antd/es/input/TextArea";
-import {useNavigate} from "react-router-dom";
-import {useCreateProductMutation} from "../../services/productsApi.ts";
+import {useNavigate, useParams} from "react-router-dom";
+import {useCreateProductMutation, useEditProductMutation, useGetProductByIdQuery} from "../../services/productsApi.ts";
 import {useGetCategoriesQuery} from "../../services/apiCategory.ts";
 import {PlusOutlined} from "@ant-design/icons";
 import {DragDropContext, Draggable, Droppable, DropResult} from "@hello-pangea/dnd";
+import {APP_ENV} from "../../env";
 
 const {Item} = Form;
 
-const CreateProductPage : React.FC = () => {
+const EditProductPage : React.FC = () => {
+
+    const {id} = useParams();
+    console.log("Id :",id);
 
     const {data: categories, isLoading: categoriesLoading, error: categoriesError} = useGetCategoriesQuery();
-    const [form] = Form.useForm<IProductCreate>();
+    const {data: product, isLoading: productLoading, error: productError} = useGetProductByIdQuery(id!);
+    const [form] = Form.useForm<IProductEdit>();
     const [selectedFiles, setSelectedFiles] = useState<UploadFile[]>([]);
     const navigate = useNavigate();
-    const [createProduct, {isLoading: productIsLoading}] = useCreateProductMutation();
+    const [editProduct, {isLoading: productIsLoading}] = useEditProductMutation();
 
-    const onFinish = async (values: IProductCreate) => {
+
+    console.log("Prod edit:",product);
+    useEffect(() => {
+        if (product){
+            form.setFieldsValue({...product});
+            const files = product?.images.map(x => ({
+                uid:x,
+                url:`${APP_ENV.REMOTE_BASE_URL}/images/medium/${x}`,
+                originFileObj: new File([new Blob([''])],x,{type:'old-image'})
+            }) as UploadFile);
+            setSelectedFiles(files);
+        }
+    }, [product]);
+
+    const onFinish = async (values: IProductEdit) => {
         try {
             values.images = selectedFiles.map(x => x.originFileObj as File);
+            values.id = product!.id;
             //console.log("Server send data: ",values)
-            const response = await createProduct(values).unwrap();
+            const response = await editProduct(values).unwrap();
             console.log("Продукт успішно створена:", response);
             navigate("..");
         } catch (error) {
@@ -61,7 +81,7 @@ const CreateProductPage : React.FC = () => {
 
     return (
         <>
-            <h1 className={"text-center text-4xl font-bold text-blue-500"}>Додати продукт</h1>
+            <h1 className={"text-center text-4xl font-bold text-blue-500"}>Редагувати продукт</h1>
 
             <div style={ {maxWidth:'600px', margin:'0 auto'}}>
                 <Form
@@ -161,7 +181,7 @@ const CreateProductPage : React.FC = () => {
                     <Item>
                         <Button type="primary" htmlType="submit"
                         disabled={productIsLoading}>
-                            {productIsLoading ? 'Створення...' : 'Створити продукт'}
+                            {productIsLoading ? 'Збереження...' : 'Зберегти продукт'}
                         </Button>
                     </Item>
                 </Form>
@@ -170,4 +190,4 @@ const CreateProductPage : React.FC = () => {
     )
 }
 
-export default CreateProductPage;
+export default EditProductPage;

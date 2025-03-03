@@ -11,6 +11,7 @@ import org.example.repository.IProductImageRepository;
 import org.example.repository.IProductRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -71,19 +72,39 @@ public class ProductService {
         productRepository.save(entity);
 
         var newImageFiles = product.getImages();
+        var oldImages = entity.getImages();
+        var newImagesMap = new HashMap<String, Integer>();
 
-        if (!newImageFiles.isEmpty()){
-            //remove old images
-            var oldProductImageEntities = entity.getImages();
-            for (var productImage : oldProductImageEntities) {
+        // Створюємо мапу для нових зображень
+        int priority = 1;
+        for (var file : newImageFiles) {
+            if (file != null && !file.isEmpty()) {
+                var imageName = file.getOriginalFilename();
+                if ("old-image".equals(file.getContentType())) {
+                    newImagesMap.put(imageName, priority++);
+                }
+            }
+        }
+
+        // Видаляємо старі зображення, яких немає в новому списку
+        for (var productImage : oldImages) {
+            if (!newImagesMap.containsKey(productImage.getName())) {
                 fileService.remove(productImage.getName());
                 productImageRepository.delete(productImage);
             }
+        }
 
-            //save new images
-            var priority = 1;
-            for (var file : newImageFiles) {
-                if (file == null || file.isEmpty()) continue;
+        // Оновлюємо пріоритет для збережених зображень
+        for (var productImage : oldImages) {
+            if (newImagesMap.containsKey(productImage.getName())) {
+                productImage.setPriority(newImagesMap.get(productImage.getName()));
+                productImageRepository.save(productImage);
+            }
+        }
+
+        // Додаємо нові зображення
+        for (var file : newImageFiles) {
+            if (file != null && !file.isEmpty() && !"old-image".equals(file.getContentType())) {
                 var imageName = fileService.load(file);
                 var img = new ProductImageEntity();
                 img.setPriority(priority++);
