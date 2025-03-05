@@ -10,9 +10,13 @@ import org.example.mapper.ProductMapper;
 import org.example.repository.IProductImageRepository;
 import org.example.repository.IProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -71,47 +75,43 @@ public class ProductService {
         entity.setCategory(cat);
         productRepository.save(entity);
 
-        var newImageFiles = product.getImages();
-        var oldImages = entity.getImages();
-        var newImagesMap = new HashMap<String, Integer>();
+        var clientImageFiles = product.getImages();
+
+        Set<String> clientImageNames = clientImageFiles.stream()
+                .map(MultipartFile::getOriginalFilename)
+                .collect(Collectors.toSet());
+
+        entity.getImages().removeIf(productImage -> {
+            if (!clientImageNames.contains(productImage.getName())) {
+                fileService.remove(productImage.getName());
+                productImageRepository.delete(productImage);
+                return true;
+            }
+            return false;
+        });
+
+
 
         // Створюємо мапу для нових зображень
         int priority = 1;
-        for (var file : newImageFiles) {
-            if (file != null && !file.isEmpty()) {
-                var imageName = file.getOriginalFilename();
-                if ("old-image".equals(file.getContentType())) {
-                    newImagesMap.put(imageName, priority++);
-                }
-            }
-        }
-
-        // Видаляємо старі зображення, яких немає в новому списку
-        for (var productImage : oldImages) {
-            if (!newImagesMap.containsKey(productImage.getName())) {
-                fileService.remove(productImage.getName());
-                productImageRepository.delete(productImage);
-            }
-        }
-
-        // Оновлюємо пріоритет для збережених зображень
-        for (var productImage : oldImages) {
-            if (newImagesMap.containsKey(productImage.getName())) {
-                productImage.setPriority(newImagesMap.get(productImage.getName()));
+        for (int i = 0; i < clientImageFiles.size();i++) {
+            var clientFile = clientImageFiles.get(i);
+            if ("old-image".equals(clientFile.getContentType())) {
+                var oldFileName = clientFile.getOriginalFilename();
+                var productImage = productImageRepository.findByName(oldFileName).get();
+                productImage.setPriority(i);
                 productImageRepository.save(productImage);
             }
-        }
-
-        // Додаємо нові зображення
-        for (var file : newImageFiles) {
-            if (file != null && !file.isEmpty() && !"old-image".equals(file.getContentType())) {
-                var imageName = fileService.load(file);
-                var img = new ProductImageEntity();
-                img.setPriority(priority++);
-                img.setName(imageName);
-                img.setProduct(entity);
-                productImageRepository.save(img);
+            else
+            {
+                var productImage = new ProductImageEntity();
+                var imageName = fileService.load(clientFile);
+                productImage.setName(imageName);
+                productImage.setPriority(i);
+                productImage.setProduct(entity);
+                productImageRepository.save(productImage);
             }
+
         }
 
         return true;
