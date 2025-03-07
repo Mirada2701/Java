@@ -11,10 +11,14 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     private CategorySeeder categorySeeder;
     private ProductsSeeder productsSeeder;
+    private RoleSeeder roleSeeder;
+    private UserSeeder userSeeder;
 
     @Override
     public void run(String... args) throws Exception {
         categorySeeder.seed();
         productsSeeder.seed();
+        roleSeeder.seed();
+        userSeeder.seed();
     }
 }
