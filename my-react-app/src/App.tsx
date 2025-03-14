@@ -4,12 +4,14 @@ import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
-import CategoryListPage from "./pages/Category/CategoryListPage.tsx";
-import CategoryCreatePage from "./pages/Category/CategoryCreatePage.tsx";
-import EditCategoryPage from "./pages/Category/EditCategoryPage.tsx";
-import ProductListPage from "./pages/Product/ProductListPage.tsx";
-import CreateProductPage from "./pages/Product/CreateProductPage.tsx";
-import EditProductPage from "./pages/Product/EditProductPage.tsx";
+import CategoryListPage from "./pages/category/CategoryListPage.tsx";
+import CategoryCreatePage from "./pages/category/CategoryCreatePage.tsx";
+import EditCategoryPage from "./pages/category/EditCategoryPage.tsx";
+import EditProductPage from "./pages/product/EditProductPage.tsx";
+import ProductListPage from "./pages/product/ProductListPage.tsx";
+import CreateProductPage from "./pages/product/CreateProductPage.tsx";
+import RegisterPage from "./pages/auth/RegisterPage.tsx";
+
 
 const App: React.FC = () => {
     return (
@@ -30,6 +32,8 @@ const App: React.FC = () => {
                         <Route path="create" element={<CreateProductPage />} />
                         <Route path="edit/:id" element={<EditProductPage />} />
                     </Route>
+
+                    <Route path="register" element={<RegisterPage />} />
                 </Route>
             </Routes>
         </Router>
