@@ -11,6 +11,7 @@ import EditProductPage from "./pages/product/EditProductPage.tsx";
 import ProductListPage from "./pages/product/ProductListPage.tsx";
 import CreateProductPage from "./pages/product/CreateProductPage.tsx";
 import RegisterPage from "./pages/auth/RegisterPage.tsx";
+import LoginPage from "./pages/auth/LoginPage.tsx";
 
 
 const App: React.FC = () => {
@@ -34,6 +35,7 @@ const App: React.FC = () => {
                     </Route>
 
                     <Route path="register" element={<RegisterPage />} />
+                    <Route path="login" element={<LoginPage />} />
                 </Route>
             </Routes>
         </Router>

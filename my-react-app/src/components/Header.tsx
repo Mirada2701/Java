@@ -31,6 +31,11 @@ const Header: React.FC = () => {
                             Реєстрація
                         </a>
                     </li>
+                    <li>
+                        <a href="/login" className="text-gray-600 hover:text-blue-500">
+                            Вхід
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </header>
