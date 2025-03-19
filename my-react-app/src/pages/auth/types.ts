@@ -12,7 +12,21 @@ export interface IUserLoginRequest {
 
 
 export interface LoginButtonProps{
- title:string
- onLogin:(token: string) => void
- icon: ReactNode
+ title:string;
+ onLogin:(token: string) => void;
+ icon: ReactNode;
+}
+
+export interface LoginGoogleRequest{
+  token:string;
+}
+
+export interface AuthResponse{
+    token:string;
+}
+
+export interface IUser{
+    id:number;
+    email:string;
+    roles:string[];
 }

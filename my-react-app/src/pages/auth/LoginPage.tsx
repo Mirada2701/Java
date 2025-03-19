@@ -4,37 +4,41 @@ import {GoogleOAuthProvider} from "@react-oauth/google";
 import { GoogleOutlined } from '@ant-design/icons';
 import GoogleLoginButton from "./GoogleLoginButton.tsx";
 import {IUserLoginRequest} from "./types.ts";
-// import {useNavigate} from "react-router-dom";
-// import {useRegisterUserMutation} from "../../services/authApi.ts";
+import {useGoogleLoginUserMutation, useLoginUserMutation} from "../../services/authApi.ts";
+import {useNavigate} from "react-router-dom";
+
 
 const {Item} = Form;
 
 const LoginPage: React.FC = () => {
 
     const [form] = Form.useForm<IUserLoginRequest>();
-    // const navigate = useNavigate();
-    // const [registerUser] = useRegisterUserMutation();
+    const navigate = useNavigate();
+    const [googleLoginUser] = useGoogleLoginUserMutation();
+    const [loginUser] = useLoginUserMutation();
 
     const onFinish = async (values: IUserLoginRequest) => {
 
         console.log("Login user", values);
-        // try {
-        //     console.log("Register user", values);
-        //     const response = await registerUser(values).unwrap();
-        //     console.log("Користувача успішно зареєстровано", response);
-        //     navigate("..");
-        // } catch (error) {
-        //     console.error("Поилка при реєстрації", error);
-        // }
+        const response = await loginUser(values).unwrap();
+        console.log("Користувач успішно ввійшов ", response);
+        navigate("..");
     }
 
-    const onLoginGoogleResult = (tokenGoogle:string) => {
-        console.log("google token", tokenGoogle);
+    const onLoginGoogleResult = async (tokenGoogle:string) => {
+        try {
+            console.log("Login user", tokenGoogle);
+            const response = await googleLoginUser({token: tokenGoogle}).unwrap();
+            console.log("Користувач успішно ввійшов через гугл", response);
+            navigate("..");
+        } catch (error) {
+            console.error("Помилка при вході через гугл", error);
+        }
     }
 
     return (
         <>
-            <GoogleOAuthProvider clientId={"688315354046-isd3q5qkjaj88uaj9oudrldsf18bm592.apps.googleusercontent.com"}>
+            <GoogleOAuthProvider clientId={"105669341684-vgu1rd2m41s3bpsvnd3biksmj3ag9ccf.apps.googleusercontent.com"}>
                 <h1 className={"text-center text-4xl font-bold text-blue-500"}>Вхід на сайт</h1>
 
                 <div style={{maxWidth: '400px', margin: '0 auto'}}>
