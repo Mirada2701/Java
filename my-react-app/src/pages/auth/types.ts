@@ -30,3 +30,18 @@ export interface IUser{
     email:string;
     roles:string[];
 }
+
+export interface IUserAuth {
+    isAdmin: boolean
+    isUser: boolean
+    isAuth: boolean,
+    roles: string[]
+}
+
+//Повна інформація про користувача
+export interface IUserState {
+    user: IUser | null
+    auth: IUserAuth
+    token: string | null
+}
+

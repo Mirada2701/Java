@@ -2,20 +2,21 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import {APP_ENV} from "../env";
 import {AuthResponse, IUserLoginRequest, IUserRegisterRequest, LoginGoogleRequest} from "../pages/auth/types.ts";
-import {jwtParse} from "../utilities/jwtParse.ts";
+import {setCredentials} from "../store/slices/userSlice.ts";
 
 export const authApi = createApi({
     reducerPath: 'authApi', // Унікальний шлях для цього API у Redux Store
     baseQuery: fetchBaseQuery({ baseUrl: `${APP_ENV.REMOTE_BASE_URL}/auth` }), // Базовий URL
     tagTypes: ["AuthUser"], // Додаємо tag для категорій
     endpoints: (builder) => ({
+
         registerUser: builder.mutation<void, IUserRegisterRequest>({
             query: (userRegister) => ({
                 url: "register",
                 method: "POST",
                 body: userRegister,
             }),
-            invalidatesTags: ["AuthUser"],
+            //invalidatesTags: ["AuthUser"], // Інвалідовуємо "Category" після створення
         }),
         googleLoginUser: builder.mutation<AuthResponse, LoginGoogleRequest>({
             query: (userGoogle) => ({
@@ -26,30 +27,37 @@ export const authApi = createApi({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const result = await queryFulfilled;
-                    console.log("Login user", result);
+                    console.log("Google auth user", arg);
                     if (result.data && result.data.token) {
-                        const userinfo = jwtParse(result.data.token);
-                        console.log("user info", userinfo);
-                    //     dispatch(setCredentials({ token: result.data.accessToken, refreshToken: result.data.refreshToken, remember: arg.remember }))
-                    //     dispatch(accountApiAuth.util.invalidateTags(["Favorites"]));
-                    //     dispatch(advertApi.util.invalidateTags(["Advert","Adverts","Locked","NotApproved","AdvertImages"]));
-                    //     dispatch(advertAuthApi.util.invalidateTags(["UserAdvert","UserAdverts"]));
-                    //     dispatch(adminMessageAuthApi.util.invalidateTags(["AdminMessages","Messeges","UnreadedMessages"]));
+                        dispatch(setCredentials({ token: result.data.token }));
+
                     }
                 } catch (error) {
                     console.error('Login failed:', error);
                 }
             },
-            invalidatesTags: ["AuthUser"],
+            //invalidatesTags: ["AuthUser"], // Інвалідовуємо "Category" після створення
         }),
         loginUser: builder.mutation<AuthResponse, IUserLoginRequest>({
-            query: (userLogin) => ({
+            query: (userGoogle) => ({
                 url: "login",
                 method: "POST",
-                body: userLogin,
+                body: userGoogle,
             }),
-            invalidatesTags: ["AuthUser"],
-        }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                try {
+                    const result = await queryFulfilled;
+                    console.log("Google auth user", arg);
+                    if (result.data && result.data.token) {
+                        dispatch(setCredentials({ token: result.data.token }));
+
+                    }
+                } catch (error) {
+                    console.error('Login failed:', error);
+                }
+            },
+            //invalidatesTags: ["AuthUser"], // Інвалідовуємо "Category" після створення
+        })
     }),
 });
 
@@ -57,4 +65,5 @@ export const authApi = createApi({
 export const {
     useRegisterUserMutation,
     useGoogleLoginUserMutation,
-    useLoginUserMutation} = authApi;
+    useLoginUserMutation
+} = authApi;
