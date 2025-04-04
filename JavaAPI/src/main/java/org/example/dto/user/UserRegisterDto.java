@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserRegisterDto {
     private String username;
+    private String base64Image;
     private String password;
 }

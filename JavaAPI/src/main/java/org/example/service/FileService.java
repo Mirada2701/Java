@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 
@@ -56,6 +58,22 @@ public class FileService {
             return "";
         }
     }
+
+    public String loadBase64(String base64String) {
+        try {
+            String[] parts = base64String.split(",", 2);
+            if (parts.length != 2) return "";
+
+            byte[] imageBytes = Base64.getDecoder().decode(parts[1]);
+            try (InputStream stream = new ByteArrayInputStream(imageBytes)) {
+                return saveStreamToFile(stream);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return "";
+        }
+    }
+
 
     private String saveStreamToFile(InputStream stream) throws IOException {
         Files.createDirectories(Paths.get(uploadDir));  //створить якщо не існує

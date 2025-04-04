@@ -3,6 +3,7 @@ import {ReactNode} from "react";
 export interface IUserRegisterRequest {
  username: string;         // Назва категорії (обов'язкове поле)     // Унікальний ідентифікатор (обов'язкове поле)
  password: string;
+ image: string | null;
 }
 
 export interface IUserLoginRequest {
@@ -29,6 +30,7 @@ export interface IUser{
     id:number;
     email:string;
     roles:string[];
+    image:string | null;
 }
 
 export interface IUserAuth {

@@ -27,6 +27,7 @@ public class UserService {
     private final IUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final FileService fileService;
 
     @Value("${google.api.userinfo}")
     private String googleUserInfoUrl;
@@ -36,10 +37,15 @@ public class UserService {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new RuntimeException("Користувач з таким ім'ям вже існує");
         }
-        var userEntity = new UserEntity();
-        userEntity.setUsername(dto.getUsername());
-        userEntity.setPassword(passwordEncoder.encode(dto.getPassword()));
-        userRepository.save(userEntity);
+        var entity = new UserEntity();
+        var newImageFile = dto.getBase64Image();
+        if (newImageFile!=null && !newImageFile.isEmpty()){
+            var imagePath = fileService.loadBase64(newImageFile);
+            entity.setImage(imagePath);
+        }
+        entity.setUsername(dto.getUsername());
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userRepository.save(entity);
     }
 
     // Аутентифікація користувача
